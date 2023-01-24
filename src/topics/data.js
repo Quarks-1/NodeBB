@@ -30,8 +30,6 @@ const intFields = [
     'pinExpiry', 'timestamp', 'upvotes', 'downvotes', 'lastposttime',
     'deleterUid',
 ];
-// The next line calls a function in a module that has not been updated to TS yet
-// eslint-disable-next-line
 function default_1(Topics) {
     Topics.getTopicsFields = function (tids, fields) {
         return __awaiter(this, void 0, void 0, function* () {
