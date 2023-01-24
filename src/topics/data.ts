@@ -5,14 +5,11 @@ import categories from '../categories';
 import utils from '../utils';
 import translator from '../translator';
 import plugins from '../plugins';
+import { TopicObject, TopicObjectCoreProperties, TopicSlimProperties } from '../types';
+// import { FieldWithPossiblyUndefined, GetFieldType } from 'lodash';
+// import { FieldDef } from 'pg';
 
 
-// const validator = require('validator');
-// const db = require('../database');
-// const categories = require('../categories');
-// const utils = require('../utils');
-// const translator = require('../translator');
-// const plugins = require('../plugins');
 
 const intFields = [
     'tid', 'cid', 'uid', 'mainPid', 'postcount',
@@ -21,8 +18,8 @@ const intFields = [
     'deleterUid',
 ];
 
-export default function (Topics: any) {
-    Topics.getTopicsFields = async function (tids: any, fields: any) {
+export async function default_1(Topics: TopicObject) {
+    Topics.getTopicsFields = async function (tids: number, fields: any) {
         if (!Array.isArray(tids) || !tids.length) {
             return [];
         }
@@ -44,43 +41,43 @@ export default function (Topics: any) {
         return result.topics;
     };
 
-    Topics.getTopicField = async function (tid: any, field: any) {
+    Topics.getTopicField = async function (tid: number, field: any) {
         const topic = await Topics.getTopicFields(tid, [field]);
         return topic ? topic[field] : null;
     };
 
-    Topics.getTopicFields = async function (tid: any, fields: any) {
+    Topics.getTopicFields = async function (tid: number, fields: any) {
         const topics = await Topics.getTopicsFields([tid], fields);
         return topics ? topics[0] : null;
     };
 
-    Topics.getTopicData = async function (tid: any) {
+    Topics.getTopicData = async function (tid: number) {
         const topics = await Topics.getTopicsFields([tid], []);
         return topics && topics.length ? topics[0] : null;
     };
 
-    Topics.getTopicsData = async function (tids: any) {
+    Topics.getTopicsData = async function (tids: number) {
         return await Topics.getTopicsFields(tids, []);
     };
 
-    Topics.getCategoryData = async function (tid: any) {
+    Topics.getCategoryData = async function (tid: number) {
         const cid = await Topics.getTopicField(tid, 'cid');
         return await categories.getCategoryData(cid);
     };
 
-    Topics.setTopicField = async function (tid: any, field: any, value: any) {
+    Topics.setTopicField = async function (tid: number, field: any, value: any) {
         await db.setObjectField(`topic:${tid}`, field, value);
     };
 
-    Topics.setTopicFields = async function (tid: any, data: any) {
+    Topics.setTopicFields = async function (tid: number, data: any) {
         await db.setObject(`topic:${tid}`, data);
     };
 
-    Topics.deleteTopicField = async function (tid: any, field: any) {
+    Topics.deleteTopicField = async function (tid: number, field: any) {
         await db.deleteObjectField(`topic:${tid}`, field);
     };
 
-    Topics.deleteTopicFields = async function (tid: any, fields: any) {
+    Topics.deleteTopicFields = async function (tid: number, fields: any) {
         await db.deleteObjectFields(`topic:${tid}`, fields);
     };
 }
