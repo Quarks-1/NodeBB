@@ -95,9 +95,9 @@ function default_1(Topics) {
     Topics.getTopicsFields = function (tids, fields) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Array.isArray(tids) || !tids.length) {
-                // const empty: Promise<TopicObject>[] = new [Promise<TopicObject>];
-                // return empty;
-                return [];
+                const empty = [];
+                return empty;
+                // return [];
             }
             // "scheduled" is derived from "timestamp"
             if (fields.includes('scheduled') && !fields.includes('timestamp')) {
