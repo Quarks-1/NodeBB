@@ -30,7 +30,7 @@ export default function default_1(Topics: TopicObject) {
         const keys: string[] = tids.map(tid => `topic:${tid}`);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const topics: Promise<TopicObject>[] = await db.getObjects(keys, fields);
+        const topics: Promise<TopicObject[]> = await db.getObjects(keys, fields);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const result = await plugins.hooks.fire('filter:topic.getFields', {
