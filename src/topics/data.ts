@@ -19,7 +19,7 @@ function escapeTitle(topicData: TopicObject) {
         if (topicData.title) {
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            topicData.title = translator.escape(validator.escape(topicData.title));
+            topicData.title = String(translator.escape(String(validator.escape(topicData.title))));
         }
         if (topicData.titleRaw) {
             // The next line calls a function in a module that has not been updated to TS yet
@@ -77,7 +77,9 @@ function modifyTopic(topic: TopicObject, fields: string[]): TagObject {
     if (fields.includes('tags') || !fields.length) {
         const tags = String(topic.tags || '');
         topic.tags = tags.split(',').filter(Boolean).map((tag) => {
-            const escaped = validator.escape(String(tag));
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            const escaped = String(validator.escape(String(tag)));
             return {
                 value: tag,
                 valueEscaped: escaped,
