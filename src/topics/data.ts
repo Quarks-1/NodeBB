@@ -91,7 +91,7 @@ function modifyTopic(topic: TopicObject, fields: string[]): TagObject {
     }
 }
 
-interface result {
+interface resulter {
     tids: number[];
     topics: TopicObject[];
     fields: string[];
@@ -101,44 +101,45 @@ interface result {
 export default function default_1(Topics: TopicObject) {
     Topics.getTopicsFields = async function (tids: number[], fields: string[]) {
         if (!Array.isArray(tids) || !tids.length) {
-            const empty: Promise<TopicObject>[] = [];
+            const empty: TopicObject[] = [];
             return empty;
         }
 
         // "scheduled" is derived from "timestamp"
         if (fields.includes('scheduled') && !fields.includes('timestamp')) {
             fields.push('timestamp');
-        } 
+        }
 
         const keys: string[] = tids.map(tid => `topic:${tid}`);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const topics: Awaited<Promise<PromiseLike<TopicObject[]>>> = await db.getObjects(keys, fields);
+        const topics: TopicObject[] = await db.getObjects(keys, fields) as TopicObject[];
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        // const result: result = await plugins.hooks.fire('filter:topic.getFields', {
-        //     tids: tids,
-        //     topics: topics,
-        //     fields: fields,
-        //     keys: keys,
-        // });
-        const result2: result = { tids: tids, topics: topics, fields: fields, keys: keys };
-        result2.topics.forEach(topic => modifyTopic(topic, fields));
-        return result2.topics;
+        const result: resulter = await plugins.hooks.fire('filter:topic.getFields', {
+            tids: tids,
+            topics: topics,
+            fields: fields,
+            keys: keys,
+        }) as resulter;
+        // const result: result = { tids: tids, topics: topics, fields: fields, keys: keys };
+        result.topics.forEach(topic => modifyTopic(topic, fields));
+        return result.topics;
     };
 
     Topics.getTopicField = async function (tid: number, field: string) {
         const topic : TopicObject = await Topics.getTopicFields(tid, [field]);
-        return topic ? topic[field] : null;
+        const retval: keyof TopicObject = topic[field] as keyof TopicObject;
+        return topic ? retval : null;
     };
 
     Topics.getTopicFields = async function (tid: number, fields: string[]) {
-        const topics : TopicObject[] | Promise<TopicObject>[] = await Topics.getTopicsFields([tid], fields);
+        const topics : TopicObject[] = await Topics.getTopicsFields([tid], fields);
         return topics ? topics[0] : null;
     };
 
     Topics.getTopicData = async function (tid: number) {
-        const topics : TopicObject[] | Promise<TopicObject>[] = await Topics.getTopicsFields([tid], []);
+        const topics : TopicObject[] = await Topics.getTopicsFields([tid], []);
         return topics && topics.length ? topics[0] : null;
     };
 
@@ -147,10 +148,12 @@ export default function default_1(Topics: TopicObject) {
     };
 
     Topics.getCategoryData = async function (tid: number) {
-        const cid: TopicObject = await Topics.getTopicField(tid, 'cid');
+        const cid: keyof TopicObject = await Topics.getTopicField(tid, 'cid');
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        return await categories.getCategoryData(cid);
+        const retval: number[] = await categories.getCategoryData(cid) as number[];
+        return retval;
+        // return await categories.getCategoryData(cid);
     };
 
     Topics.setTopicField = async function (tid: number, field: string, value: number) {
