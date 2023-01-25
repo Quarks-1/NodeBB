@@ -28,6 +28,8 @@ function default_1(Topics) {
     Topics.getTopicsFields = function (tids, fields) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Array.isArray(tids) || !tids.length) {
+                // const empty: Promise<TopicObject>[] = new [Promise<TopicObject>];
+                // return empty;
                 return [];
             }
             // "scheduled" is derived from "timestamp"
@@ -35,7 +37,11 @@ function default_1(Topics) {
                 fields.push('timestamp');
             }
             const keys = tids.map(tid => `topic:${tid}`);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             const topics = yield database_1.default.getObjects(keys, fields);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             const result = yield plugins_1.default.hooks.fire('filter:topic.getFields', {
                 tids: tids,
                 topics: topics,
@@ -72,26 +78,36 @@ function default_1(Topics) {
     Topics.getCategoryData = function (tid) {
         return __awaiter(this, void 0, void 0, function* () {
             const cid = yield Topics.getTopicField(tid, 'cid');
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             return yield categories_1.default.getCategoryData(cid);
         });
     };
     Topics.setTopicField = function (tid, field, value) {
         return __awaiter(this, void 0, void 0, function* () {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             yield database_1.default.setObjectField(`topic:${tid}`, field, value);
         });
     };
     Topics.setTopicFields = function (tid, data) {
         return __awaiter(this, void 0, void 0, function* () {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             yield database_1.default.setObject(`topic:${tid}`, data);
         });
     };
     Topics.deleteTopicField = function (tid, field) {
         return __awaiter(this, void 0, void 0, function* () {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             yield database_1.default.deleteObjectField(`topic:${tid}`, field);
         });
     };
     Topics.deleteTopicFields = function (tid, fields) {
         return __awaiter(this, void 0, void 0, function* () {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             yield database_1.default.deleteObjectFields(`topic:${tid}`, fields);
         });
     };
@@ -100,10 +116,14 @@ exports.default = default_1;
 function escapeTitle(topicData) {
     if (topicData) {
         if (topicData.title) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             topicData.title = translator_1.default.escape(validator_1.default.escape(topicData.title));
         }
         if (topicData.titleRaw) {
-            topicData.titleRaw = translator_1.default.escape(topicData.titleRaw);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            topicData.titleRaw = String(translator_1.default.escape(topicData.titleRaw));
         }
     }
 }
@@ -111,6 +131,8 @@ function modifyTopic(topic, fields) {
     if (!topic) {
         return;
     }
+    // The next line calls a function in a module that has not been updated to TS yet
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     database_1.default.parseIntFields(topic, intFields, fields);
     if (topic.hasOwnProperty('title')) {
         topic.titleRaw = topic.title;
@@ -118,16 +140,23 @@ function modifyTopic(topic, fields) {
     }
     escapeTitle(topic);
     if (topic.hasOwnProperty('timestamp')) {
-        topic.timestampISO = utils_1.default.toISOString(topic.timestamp);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        topic.timestampISO = Number(utils_1.default.toISOString(topic.timestamp));
         if (!fields.length || fields.includes('scheduled')) {
             topic.scheduled = (topic.timestamp > Date.now().toString()).toString();
         }
     }
     if (topic.hasOwnProperty('lastposttime')) {
-        topic.lastposttimeISO = utils_1.default.toISOString(topic.lastposttime);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        topic.lastposttimeISO = Number(utils_1.default.toISOString(topic.lastposttime));
     }
     if (topic.hasOwnProperty('pinExpiry')) {
-        topic.pinExpiryISO = utils_1.default.toISOString(topic.pinExpiry);
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const res = String(utils_1.default.toISOString(topic.pinExpiry));
+        topic.pinExpiryISO = res;
     }
     if (topic.hasOwnProperty('upvotes') && topic.hasOwnProperty('downvotes')) {
         topic.votes = (Number(topic.upvotes) - Number(topic.downvotes)).toString();
@@ -144,6 +173,9 @@ function modifyTopic(topic, fields) {
                 valueEscaped: escaped,
                 valueEncoded: encodeURIComponent(escaped),
                 class: escaped.replace(/\s/g, '-'),
+                score: 0,
+                color: '',
+                bgColor: '',
             };
         });
     }

@@ -17,13 +17,23 @@ export type TopicObjectCoreProperties = {
   bookmark: number;
   unreplied: boolean;
   icons: string[];
+  getTopicsFields(tids: number[], fields: string[]): Promise<TopicObject[]>;
+  getTopicField(tid: number, field: string): Promise<TopicObject>;
+  getTopicFields(tid: number, fields: string[]): Promise<TopicObject>;
+  getTopicData(tid: number): Promise<TopicObject>;
+  getTopicsData(tids: number[]): Promise<TopicObject[]>;
+  getCategoryData(tid: number): Promise<void>;
+  setTopicField(tid: number, field: string, value: number): Promise<void>;
+  setTopicFields(tid: number, data: number[]): Promise<void>;
+  deleteTopicField(tid: number, field: string): Promise<void>;
+  deleteTopicFields(tid: number, fields: string[]): Promise<void>;
 };
 
 export type TopicObjectOptionalProperties = {
   tid: number;
   thumb: string;
   pinExpiry: number;
-  pinExpiryISO: string;
+  pinExpiryISO: string | number;
   index: number;
 };
 
@@ -61,7 +71,7 @@ export type TopicSlimProperties = {
   lastposttime: string;
   lastposttimeISO: number;
   pinExpiry: number;
-  pinExpiryISO: number;
+  pinExpiryISO: number | string;
   upvotes: string;
   downvotes: string;
   votes: string;
