@@ -123,7 +123,7 @@ export default function default_1(Topics: TopicObject) {
         //     fields: fields,
         //     keys: keys,
         // });
-        const result2: result = {tids: tids, topics: topics, fields: fields, keys: keys};
+        const result2: result = { tids: tids, topics: topics, fields: fields, keys: keys };
         result2.topics.forEach(topic => modifyTopic(topic, fields));
         return result2.topics;
     };

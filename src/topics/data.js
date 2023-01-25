@@ -17,7 +17,6 @@ const database_1 = __importDefault(require("../database"));
 const categories_1 = __importDefault(require("../categories"));
 const utils_1 = __importDefault(require("../utils"));
 const translator_1 = __importDefault(require("../translator"));
-const plugins_1 = __importDefault(require("../plugins"));
 const intFields = [
     'tid', 'cid', 'uid', 'mainPid', 'postcount',
     'viewcount', 'postercount', 'deleted', 'locked', 'pinned',
@@ -109,14 +108,15 @@ function default_1(Topics) {
             const topics = yield database_1.default.getObjects(keys, fields);
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const result = yield plugins_1.default.hooks.fire('filter:topic.getFields', {
-                tids: tids,
-                topics: topics,
-                fields: fields,
-                keys: keys,
-            });
-            result.topics.forEach(topic => modifyTopic(topic, fields));
-            return result.topics;
+            // const result: result = await plugins.hooks.fire('filter:topic.getFields', {
+            //     tids: tids,
+            //     topics: topics,
+            //     fields: fields,
+            //     keys: keys,
+            // });
+            const result2 = { tids: tids, topics: topics, fields: fields, keys: keys };
+            result2.topics.forEach(topic => modifyTopic(topic, fields));
+            return result2.topics;
         });
     };
     Topics.getTopicField = function (tid, field) {
