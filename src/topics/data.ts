@@ -14,6 +14,83 @@ const intFields = [
     'deleterUid',
 ];
 
+function escapeTitle(topicData: TopicObject) {
+    if (topicData) {
+        if (topicData.title) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            topicData.title = translator.escape(validator.escape(topicData.title));
+        }
+        if (topicData.titleRaw) {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            topicData.titleRaw = String(translator.escape(topicData.titleRaw));
+        }
+    }
+}
+
+function modifyTopic(topic: TopicObject, fields: string[]): TagObject {
+    if (!topic) {
+        return;
+    }
+    // The next line calls a function in a module that has not been updated to TS yet
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    db.parseIntFields(topic, intFields, fields);
+
+    if (topic.hasOwnProperty('title')) {
+        topic.titleRaw = topic.title;
+        topic.title = String(topic.title);
+    }
+
+    escapeTitle(topic);
+
+    if (topic.hasOwnProperty('timestamp')) {
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        topic.timestampISO = Number(utils.toISOString(topic.timestamp));
+        if (!fields.length || fields.includes('scheduled')) {
+            topic.scheduled = (topic.timestamp > Date.now().toString()).toString();
+        }
+    }
+
+    if (topic.hasOwnProperty('lastposttime')) {
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        topic.lastposttimeISO = Number(utils.toISOString(topic.lastposttime));
+    }
+
+    if (topic.hasOwnProperty('pinExpiry')) {
+        // The next line calls a function in a module that has not been updated to TS yet
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        const res = String(utils.toISOString(topic.pinExpiry));
+        topic.pinExpiryISO = res;
+    }
+
+    if (topic.hasOwnProperty('upvotes') && topic.hasOwnProperty('downvotes')) {
+        topic.votes = (Number(topic.upvotes) - Number(topic.downvotes)).toString();
+    }
+
+    if (fields.includes('teaserPid') || !fields.length) {
+        topic.teaserPid = topic.teaserPid || null;
+    }
+
+    if (fields.includes('tags') || !fields.length) {
+        const tags = String(topic.tags || '');
+        topic.tags = tags.split(',').filter(Boolean).map((tag) => {
+            const escaped = validator.escape(String(tag));
+            return {
+                value: tag,
+                valueEscaped: escaped,
+                valueEncoded: encodeURIComponent(escaped),
+                class: escaped.replace(/\s/g, '-'),
+                score: 0,
+                color: '',
+                bgColor: '',
+            };
+        });
+    }
+}
+
 export default function default_1(Topics: TopicObject) {
     Topics.getTopicsFields = async function (tids: number[], fields: string[]) {
         if (!Array.isArray(tids) || !tids.length) {
@@ -92,81 +169,4 @@ export default function default_1(Topics: TopicObject) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         await db.deleteObjectFields(`topic:${tid}`, fields);
     };
-}
-
-function escapeTitle(topicData: TopicObject) {
-    if (topicData) {
-        if (topicData.title) {
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            topicData.title = translator.escape(validator.escape(topicData.title));
-        }
-        if (topicData.titleRaw) {
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            topicData.titleRaw = String(translator.escape(topicData.titleRaw));
-        }
-    }
-}
-
-function modifyTopic(topic: TopicObject, fields: string[]): TagObject {
-    if (!topic) {
-        return;
-    }
-    // The next line calls a function in a module that has not been updated to TS yet
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    db.parseIntFields(topic, intFields, fields);
-
-    if (topic.hasOwnProperty('title')) {
-        topic.titleRaw = topic.title;
-        topic.title = String(topic.title);
-    }
-
-    escapeTitle(topic);
-
-    if (topic.hasOwnProperty('timestamp')) {
-        // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        topic.timestampISO = Number(utils.toISOString(topic.timestamp));
-        if (!fields.length || fields.includes('scheduled')) {
-            topic.scheduled = (topic.timestamp > Date.now().toString()).toString();
-        }
-    }
-
-    if (topic.hasOwnProperty('lastposttime')) {
-        // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        topic.lastposttimeISO = Number(utils.toISOString(topic.lastposttime));
-    }
-
-    if (topic.hasOwnProperty('pinExpiry')) {
-        // The next line calls a function in a module that has not been updated to TS yet
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const res = String(utils.toISOString(topic.pinExpiry));
-        topic.pinExpiryISO = res;
-    }
-
-    if (topic.hasOwnProperty('upvotes') && topic.hasOwnProperty('downvotes')) {
-        topic.votes = (Number(topic.upvotes) - Number(topic.downvotes)).toString();
-    }
-
-    if (fields.includes('teaserPid') || !fields.length) {
-        topic.teaserPid = topic.teaserPid || null;
-    }
-
-    if (fields.includes('tags') || !fields.length) {
-        const tags = String(topic.tags || '');
-        topic.tags = tags.split(',').filter(Boolean).map((tag) => {
-            const escaped = validator.escape(String(tag));
-            return {
-                value: tag,
-                valueEscaped: escaped,
-                valueEncoded: encodeURIComponent(escaped),
-                class: escaped.replace(/\s/g, '-'),
-                score: 0,
-                color: '',
-                bgColor: '',
-            };
-        });
-    }
 }
