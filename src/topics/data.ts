@@ -100,7 +100,7 @@ interface resulter {
     keys: string[];
 }
 
-export default function default_1(Topics: TopicObject) {
+export = function (Topics: TopicObject) {
     Topics.getTopicsFields = async function (tids: number[], fields: string[]) {
         if (!Array.isArray(tids) || !tids.length) {
             const empty: TopicObject[] = [];
@@ -181,4 +181,4 @@ export default function default_1(Topics: TopicObject) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         await db.deleteObjectFields(`topic:${tid}`, fields);
     };
-}
+};

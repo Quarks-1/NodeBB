@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const validator_1 = __importDefault(require("validator"));
 const database_1 = __importDefault(require("../database"));
 const categories_1 = __importDefault(require("../categories"));
@@ -93,7 +92,7 @@ function modifyTopic(topic, fields) {
         });
     }
 }
-function default_1(Topics) {
+module.exports = function (Topics) {
     Topics.getTopicsFields = function (tids, fields) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Array.isArray(tids) || !tids.length) {
@@ -183,5 +182,4 @@ function default_1(Topics) {
             yield database_1.default.deleteObjectFields(`topic:${tid}`, fields);
         });
     };
-}
-exports.default = default_1;
+};
