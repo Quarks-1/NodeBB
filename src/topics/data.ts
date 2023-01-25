@@ -103,18 +103,17 @@ export default function default_1(Topics: TopicObject) {
         if (!Array.isArray(tids) || !tids.length) {
             const empty: Promise<TopicObject>[] = [];
             return empty;
-            // return [];
         }
 
         // "scheduled" is derived from "timestamp"
         if (fields.includes('scheduled') && !fields.includes('timestamp')) {
             fields.push('timestamp');
-        }
+        } 
 
         const keys: string[] = tids.map(tid => `topic:${tid}`);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const topics: TopicObject[] = await db.getObjects(keys, fields);
+        const topics: Awaited<Promise<PromiseLike<TopicObject[]>>> = await db.getObjects(keys, fields);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         // const result: result = await plugins.hooks.fire('filter:topic.getFields', {
