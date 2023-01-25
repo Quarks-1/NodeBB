@@ -117,14 +117,15 @@ export default function default_1(Topics: TopicObject) {
         const topics: TopicObject[] = await db.getObjects(keys, fields);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const result: result = await plugins.hooks.fire('filter:topic.getFields', {
-            tids: tids,
-            topics: topics,
-            fields: fields,
-            keys: keys,
-        });
-        result.topics.forEach(topic => modifyTopic(topic, fields));
-        return result.topics;
+        // const result: result = await plugins.hooks.fire('filter:topic.getFields', {
+        //     tids: tids,
+        //     topics: topics,
+        //     fields: fields,
+        //     keys: keys,
+        // });
+        const result2: result = {tids: tids, topics: topics, fields: fields, keys: keys};
+        result2.topics.forEach(topic => modifyTopic(topic, fields));
+        return result2.topics;
     };
 
     Topics.getTopicField = async function (tid: number, field: string) {
