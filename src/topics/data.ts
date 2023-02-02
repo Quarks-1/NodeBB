@@ -5,10 +5,11 @@ import categories from '../categories';
 import utils from '../utils';
 import translator from '../translator';
 import plugins from '../plugins';
-import _ from 'lodash';
-import { TopicObject } from '../types';
-import { FieldWithPossiblyUndefined } from 'lodash';
-import { FieldDef } from 'pg';
+import { TopicObject, TopicObjectCoreProperties, TopicSlimProperties } from '../types';
+// import { FieldWithPossiblyUndefined, GetFieldType } from 'lodash';
+// import { FieldDef } from 'pg';
+
+
 
 const intFields = [
     'tid', 'cid', 'uid', 'mainPid', 'postcount',
@@ -17,8 +18,8 @@ const intFields = [
     'deleterUid',
 ];
 
-export default function default_1(Topics: TopicObject) {
-    Topics.getTopicsFields = async function (tids: number, fields: FieldWithPossiblyUndefined<FieldDef, any>) {
+export async function default_1(Topics: TopicObject) {
+    Topics.getTopicsFields = async function (tids: number, fields: any) {
         if (!Array.isArray(tids) || !tids.length) {
             return [];
         }
@@ -40,12 +41,12 @@ export default function default_1(Topics: TopicObject) {
         return result.topics;
     };
 
-    Topics.getTopicField = async function (tid: number, field: unknown) {
+    Topics.getTopicField = async function (tid: number, field: any) {
         const topic = await Topics.getTopicFields(tid, [field]);
         return topic ? topic[field] : null;
     };
 
-    Topics.getTopicFields = async function (tid: number, fields: unknown) {
+    Topics.getTopicFields = async function (tid: number, fields: any) {
         const topics = await Topics.getTopicsFields([tid], fields);
         return topics ? topics[0] : null;
     };
@@ -92,7 +93,7 @@ function escapeTitle(topicData: any) {
     }
 }
 
-function modifyTopic(topic: TopicObject, fields: FieldWithPossiblyUndefined<FieldDef, any>) {
+function modifyTopic(topic: any, fields: any) {
     if (!topic) {
         return;
     }
@@ -109,7 +110,7 @@ function modifyTopic(topic: TopicObject, fields: FieldWithPossiblyUndefined<Fiel
     if (topic.hasOwnProperty('timestamp')) {
         topic.timestampISO = utils.toISOString(topic.timestamp);
         if (!fields.length || fields.includes('scheduled')) {
-            topic.scheduled = (topic.timestamp > Date.now().toString()).toString();
+            topic.scheduled = topic.timestamp > Date.now();
         }
     }
 
@@ -122,7 +123,7 @@ function modifyTopic(topic: TopicObject, fields: FieldWithPossiblyUndefined<Fiel
     }
 
     if (topic.hasOwnProperty('upvotes') && topic.hasOwnProperty('downvotes')) {
-        topic.votes = (Number(topic.upvotes) - Number(topic.downvotes)).toString();
+        topic.votes = topic.upvotes - topic.downvotes;
     }
 
     if (fields.includes('teaserPid') || !fields.length) {
