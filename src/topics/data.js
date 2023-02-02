@@ -18,6 +18,12 @@ const categories_1 = __importDefault(require("../categories"));
 const utils_1 = __importDefault(require("../utils"));
 const translator_1 = __importDefault(require("../translator"));
 const plugins_1 = __importDefault(require("../plugins"));
+// const validator = require('validator');
+// const db = require('../database');
+// const categories = require('../categories');
+// const utils = require('../utils');
+// const translator = require('../translator');
+// const plugins = require('../plugins');
 const intFields = [
     'tid', 'cid', 'uid', 'mainPid', 'postcount',
     'viewcount', 'postercount', 'deleted', 'locked', 'pinned',
@@ -120,7 +126,7 @@ function modifyTopic(topic, fields) {
     if (topic.hasOwnProperty('timestamp')) {
         topic.timestampISO = utils_1.default.toISOString(topic.timestamp);
         if (!fields.length || fields.includes('scheduled')) {
-            topic.scheduled = (topic.timestamp > Date.now().toString()).toString();
+            topic.scheduled = topic.timestamp > Date.now();
         }
     }
     if (topic.hasOwnProperty('lastposttime')) {
@@ -130,7 +136,7 @@ function modifyTopic(topic, fields) {
         topic.pinExpiryISO = utils_1.default.toISOString(topic.pinExpiry);
     }
     if (topic.hasOwnProperty('upvotes') && topic.hasOwnProperty('downvotes')) {
-        topic.votes = (Number(topic.upvotes) - Number(topic.downvotes)).toString();
+        topic.votes = topic.upvotes - topic.downvotes;
     }
     if (fields.includes('teaserPid') || !fields.length) {
         topic.teaserPid = topic.teaserPid || null;
